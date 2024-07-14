@@ -1,9 +1,9 @@
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
 
-FROM ghcr.io/ublue-os/bazzite:latest AS tishy-base
+FROM ghcr.io/ublue-os/bazzite:latest AS gallifreyan-base
 
-ARG IMAGE_NAME="${IMAGE_NAME:-tishy}"
-ARG IMAGE_VENDOR="${IMAGE_VENDOR:-sunshowers}"
+ARG IMAGE_NAME="${IMAGE_NAME:-gallifreyan}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR:-roger}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-bazzite}"
@@ -20,14 +20,12 @@ RUN rpm-ostree install \
     direnv \
     evtest \
     fd-find \
-    kontact \
     libguestfs-tools \
     perf \
     powertop \
     ripgrep \
-    ryzenadj \
     strace \
-    yakuake \
+    alacritty \
     zsh
 
 ## Add flatpak packages
@@ -36,17 +34,8 @@ RUN cat /tmp/flatpak_install >> /usr/share/ublue-os/bazzite/flatpak/install
 ## Commit
 RUN rm -rf /var/* && ostree container commit
 
-FROM tishy-base AS tishy-1password
-
-## Add 1password
-COPY system_files /
-RUN /tmp/install-1password.sh
-
-## Commit
-RUN rm -rf /var/* && ostree container commit
-
 ## Next: install system Chrome
-FROM tishy-1password AS tishy-chrome
+FROM gallifreyan-base AS gallifreyan-chrome
 
 ## Add system Chrome
 COPY system_files /
@@ -57,7 +46,7 @@ RUN rm -rf /var/* && ostree container commit
 
 ## Lastly: install other packages
 
-FROM tishy-chrome AS tishy
+FROM gallifreyan-chrome AS gallifreyan
 ARG FEDORA_MAJOR_VERSION
 
 ## Install other new packages
